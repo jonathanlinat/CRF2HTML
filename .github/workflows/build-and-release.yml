@@ -1,0 +1,63 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and upload the binary
+    runs-on: ubuntu-22.04
+    container:
+      image: alpine:latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        apk add --no-cache go upx
+
+    - name: Build binary
+      run: go build -o crf2html main.go
+
+    - name: Compress binary with UPX
+      run: upx --best crf2html
+
+    - name: Upload binary as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: crf2html
+        path: ./crf2html
+
+  release:
+    name: Create a new release
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: crf2html
+
+    - name: Setup GitHub CLI and jq
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key $KEY_SERVER_APT_KEY
+        sudo apt-get install -y gh
+      env:
+        KEY_SERVER_APT_KEY: ${{ secrets.KEY_SERVER_APT_KEY }}
+
+    - name: Create release and upload binary
+      run: |
+        TIMESTAMP=$(date +"%Y-%m-%d")
+        SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-8)
+        gh release create ${TIMESTAMP}-${SHORT_SHA} ./crf2html --title "Release ${SHORT_SHA} ($TIMESTAMP)" --repo $GITHUB_REPOSITORY
+      env:
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

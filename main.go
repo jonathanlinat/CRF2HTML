@@ -6,8 +6,8 @@ package main
  * This program generates an HTML page displaying image textures from a given directory or ZIP file.
  * It resizes and encodes the images as base64 and creates an organized HTML page.
  *
- * Usage: go build main.go && ./main source_path output_path [-title "Page Title"]
- * Example: go build main.go && ./main ./fam.crf ./textures.html -title "My Custom Title"
+ * Usage: go build -o crf2html main.go && ./crf2html source_path output_path [-title "Page Title"]
+ * Example: go build -o crf2html main.go && ./crf2html ./fam.crf ./textures.html -title "My Custom Title"
  *
  * Arguments:
  *  - source_path: Path to the directory containing image files or a CRF/ZIP file.
@@ -97,7 +97,7 @@ func main() {
 	settings := ProgramSettings{
 		SourcePath:      args[1],
 		OutputPath:      args[2],
-		PageTitle:       "Textures", // Default page title
+		PageTitle:       "Textures",
 		ThumbnailSize:   128,
 		BackgroundColor: color.RGBA{255, 255, 255, 255},
 	}

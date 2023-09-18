@@ -1,5 +1,7 @@
 # CRF2HTML
 
+[![Build and Release](https://github.com/jonathanlinat/CRF2HTML/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/jonathanlinat/CRF2HTML/actions/workflows/build-and-release.yml)
+
 ## Introduction
 
 CRF2HTML is a command-line utility inspired by the Thief series of video games, including Thief: The Dark Project (Thief Gold) and Thief II: The Metal Age. In these classic games, textures and images were stored in proprietary formats like CRF and PCX. CRF2HTML aims to bring a piece of that nostalgic world to modern web development.
@@ -28,7 +30,11 @@ Before using CRF2HTML, make sure you have the following prerequisites installed 
 
 ## Installation
 
-### Compile from Source
+### Option 1: Precompiled Binary
+
+You can download a precompiled binary for your platform from the [releases](https://github.com/jonathanlinat/CRF2HTML/releases) section of this repository.
+
+### Option 2: Compile from Source
 
 If you prefer to compile the program yourself, follow these steps:
 
@@ -47,17 +53,17 @@ If you prefer to compile the program yourself, follow these steps:
 3. Build the program:
 
    ```bash
-   go build main.go
+   go build -o crf2html main.go
    ```
 
-This will generate an executable binary named `main` in the project directory.
+This will generate an executable binary named `crf2html` in the project directory.
 
 ## Usage
 
 To use CRF2HTML, follow the usage instructions below:
 
 ```bash
-./main source_path output_path [-title "Page Title"]
+./crf2html source_path output_path [-title "Page Title"]
 ```
 
 - `source_path`: Path to the directory containing image files or a CRF/ZIP file.
@@ -69,7 +75,7 @@ To use CRF2HTML, follow the usage instructions below:
 Here's an example of how to use CRF2HTML to create an HTML page:
 
 ```bash
-./main ./fam.crf ./textures.html -title "My Custom Title"
+./crf2html ./fam.crf ./textures.html -title "My Custom Title"
 ```
 
 This command will generate an HTML page named `textures.html` in the current directory, showcasing the image textures from the `./fam.crf` source, with the custom title "My Custom Title."
