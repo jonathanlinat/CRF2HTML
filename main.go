@@ -3,14 +3,14 @@ package main
 /**
  * crf2html
  *
- * This program generates an HTML page displaying image textures from a given directory or ZIP file.
+ * This program generates an HTML page displaying image textures from a given directory or CRF/ZIP file.
  * It resizes and encodes the images as base64 and creates an organized HTML page.
  *
  * Usage: go build -o crf2html main.go && ./crf2html source_path output_path [-title "Page Title"]
  * Example: go build -o crf2html main.go && ./crf2html ./fam.crf ./textures.html -title "My Custom Title"
  *
  * Arguments:
- *  - source_path: Path to the directory containing image files or a CRF/ZIP file.
+ *  - source_path: Path to the directory containing image files or a CRF/CRF/ZIP file.
  *  - output_path: Path to the HTML file to be generated.
  *
  * Options:
@@ -31,8 +31,10 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
+	"github.com/ftrvxmtrx/tga"
 	"github.com/nfnt/resize"
 	"github.com/samuel/go-pcx/pcx"
 )
@@ -102,9 +104,23 @@ func main() {
 		BackgroundColor: color.RGBA{255, 255, 255, 255},
 	}
 
-	// Check for the -title option and update the page title if provided
-	if len(args) > 3 && args[3] == "-title" && len(args) > 4 {
-		settings.PageTitle = args[4]
+	// Parse the -title option
+	for i := 3; i < len(args); i += 2 {
+		if i+1 < len(args) && args[i] == "-title" {
+			settings.PageTitle = args[i+1]
+		}
+	}
+
+	// Parse the -size option
+	for i := 3; i < len(args); i += 2 {
+		if i+1 < len(args) && args[i] == "-size" {
+			if size, err := strconv.Atoi(args[i+1]); err == nil {
+				settings.ThumbnailSize = size
+			} else {
+				fmt.Fprintf(os.Stderr, "Invalid value for -size: %s\n", args[i+1])
+				return
+			}
+		}
 	}
 
 	var fileList []string
@@ -112,7 +128,7 @@ func main() {
 	var zipReader *zip.ReadCloser
 	var err error
 
-	// Check if the source path is a directory or a ZIP file
+	// Check if the source path is a directory or a CRF/ZIP file
 	if fileInfo, err := os.Stat(settings.SourcePath); err == nil && fileInfo.IsDir() {
 		// If it's a directory, list files within it
 		fileList, err = FileListing(settings.SourcePath)
@@ -121,7 +137,7 @@ func main() {
 			return
 		}
 	} else {
-		// If it's a ZIP file, open and read its contents
+		// If it's a CRF/ZIP file, open and read its contents
 		zipReader, err = zip.OpenReader(settings.SourcePath)
 		if err != nil {
 			fmt.Println(err)
@@ -153,7 +169,7 @@ func main() {
 			continue
 		}
 		extension := filepath.Ext(filename)
-		allowedExtensions := map[string]bool{".pcx": true, ".gif": true, ".png": true, ".jpg": true}
+		allowedExtensions := map[string]bool{".pcx": true, ".gif": true, ".png": true, ".jpg": true, ".tga": true}
 		if !allowedExtensions[extension] || filename == "full.pcx" {
 			fmt.Fprintf(os.Stderr, "skipping %s\n", filePath)
 			continue
@@ -170,6 +186,8 @@ func main() {
 
 			if extension == ".pcx" {
 				imageObj, err = pcx.Decode(imageFile)
+			} else if extension == ".tga" {
+				imageObj, err = tga.Decode(imageFile)
 			} else {
 				imageObj, _, err = image.Decode(imageFile)
 			}
@@ -178,7 +196,7 @@ func main() {
 				return
 			}
 		} else {
-			// If the source is a ZIP file, extract the image
+			// If the source is a CRF/ZIP file, extract the image
 			imageObj, err = GetImageFromZip(zipReader, filePath)
 			if err != nil {
 				fmt.Println(err)
@@ -207,7 +225,7 @@ func main() {
 
 		// Encode the image as base64
 		buffer := new(bytes.Buffer)
-		err := jpeg.Encode(buffer, imageObj, &jpeg.Options{Quality: 80})
+		err := jpeg.Encode(buffer, imageObj, &jpeg.Options{Quality: 100})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -220,7 +238,10 @@ func main() {
 		filenameWithoutExtension := strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath))
 		imageDimensions := fmt.Sprintf("%dx%d", imageObj.Bounds().Dx(), imageObj.Bounds().Dy())
 		imageFormat := strings.TrimPrefix(filepath.Ext(filePath), ".")
-		caption := fmt.Sprintf("%s - %s %s", strings.ToLower(filenameWithoutExtension), strings.ToLower(imageDimensions), strings.ToLower(imageFormat))
+
+		filenameSpan := fmt.Sprintf("<span class='filename'>%s</span>", strings.ToLower(filenameWithoutExtension))
+		infoSpan := fmt.Sprintf("<span class='info'>%s (%s)</span>", strings.ToLower(imageDimensions), strings.ToLower(imageFormat))
+		caption := fmt.Sprintf("%s %s", filenameSpan, infoSpan)
 
 		// Create a Texture instance for the current image
 		texture := Texture{
@@ -266,23 +287,30 @@ func main() {
 		<head>
 		<title>%s</title>
 		<style>
-		body {background-color: #2f3136; color: #fff; font-family: Arial,sans-serif;}
-		h1 {color: #fff; font-size: 18px; font-weight: bold;}
-		h2 {color: #fff; font-size: 16px; font-weight: bold; text-transform: capitalize;}
-		.family {display: flex; flex-wrap: wrap; gap: 4px;}
-		.texture {flex: 0 0 auto;}
-		img {width: 100%%; height: 100%%; object-fit: contain;}
-		.caption {color: #8e9297; font-size: 10px;}
-		.image {width: %dpx; height: %dpx;}
-		.texture {width: %dpx;}
-		</style>
+		body,h1,h2{color:#fff;font-family:Arial,sans-serif;line-height:1}
+		body{background:#333}
+		h1{font-size:18px;text-transform:uppercase}
+		h2{border-bottom:1px solid #899;font-size:16px;padding:0 0 8px;text-transform:capitalize}
+		section{padding:24px 0}
+		.family{display:flex;flex-wrap:wrap;gap:16px}
+		.texture,.image{width:%dpx}
+		.texture{flex:0 0 auto}
+		.image{height:%dpx}
+		img{width:100%%;height:100%%;object-fit:contain}
+		.caption{color:#899;font-size:12px;text-align:center;padding:16px 0;display:flex;flex-direction:column;gap:8px}
+		.filename{font-size:14px;font-weight:bold}
+		</style>		
 		</head>
 		<body>
 		<h1>%s</h1>
 		%s
 		</body>
 		</html>`,
-		html.EscapeString(settings.PageTitle), settings.ThumbnailSize, settings.ThumbnailSize, settings.ThumbnailSize, html.EscapeString(settings.PageTitle), strings.Join(sections, ""),
+		html.EscapeString(settings.PageTitle),
+		settings.ThumbnailSize,
+		settings.ThumbnailSize,
+		html.EscapeString(settings.PageTitle),
+		strings.Join(sections, ""),
 	)
 
 	// Write the HTML page to the output file

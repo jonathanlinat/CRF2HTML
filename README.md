@@ -71,7 +71,8 @@ This will generate a binary, `crf2html` or `crf2html.exe`, in the project direct
 
 - `source_path`: Path to the directory containing image files or a CRF/ZIP file.
 - `output_path`: Path to the HTML file to be generated.
-- `-title "Page Title"` (optional): Custom title for the HTML page. If not provided, the default title is "Textures."
+- `-title "Page Title"` (optional): Custom title for the HTML page. If not provided, the default title is `Textures`.
+- `-size 256` (optional): Custom thumbnail size for the HTML page. If not provided, the default size is `128`.
 
 ### Linux
 
