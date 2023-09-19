@@ -1,7 +1,7 @@
 package main
 
 /**
- * CRF2HTML
+ * crf2html
  *
  * This program generates an HTML page displaying image textures from a given directory or ZIP file.
  * It resizes and encodes the images as base64 and creates an organized HTML page.
