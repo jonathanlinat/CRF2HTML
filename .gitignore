@@ -1,4 +1,4 @@
 *.crf
+*.html
 *.zip
-crf2html
-textures.html
+crf2html*

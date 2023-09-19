@@ -4,7 +4,7 @@
 
 ## Introduction
 
-`crf2html` is a command-line utility inspired by the Thief series of video games, including Thief: The Dark Project (Thief Gold) and Thief II: The Metal Age. In these classic games, textures and images were stored in proprietary formats like CRF and PCX. It aims to bring a piece of that nostalgic world to modern web development.
+`crf2html` is a command-line utility inspired by the Thief series of video games, including Thief: The Dark Project (Thief Gold) and Thief II: The Metal Age. In these classic games, textures and images were stored in proprietary formats like CRF and PCX. The tool aims to bring a piece of that nostalgic world to modern web development.
 
 The program is designed to generate an HTML page that beautifully showcases the textures found in Thief series CRF files and other image formats (PCX, GIF, PNG, and JPG). It seamlessly resizes and encodes these textures as base64, making it easy to embed them in an organized HTML page.
 
@@ -31,7 +31,9 @@ You can download a precompiled binary for your platform from the [releases](http
 
 > **Important**
 >
-> It is recommended to install and make use of, at least, **Go v1.18**. Here are the [corresponding instructions](https://go.dev/doc/install).
+> It is recommended to install and use at least **Go v1.18**. Here are the [corresponding instructions](https://go.dev/doc/install).
+
+---
 
 If you prefer to compile the program yourself, follow these steps:
 
@@ -49,33 +51,55 @@ If you prefer to compile the program yourself, follow these steps:
 
 3. Build the program:
 
+   **Linux**
+
    ```bash
-   go build -o crf2html main.go
+   GOOS=linux GOARCH=amd64 go build -o crf2html main.go
    ```
 
-This will generate an executable binary named `crf2html` in the project directory.
+   **Windows**
+
+   ```bash
+   GOOS=windows GOARCH=amd64 go build -o crf2html.exe main.go
+   ```
+
+This will generate a binary, `crf2html` or `crf2html.exe`, in the project directory.
 
 ## Usage
-
-To use `crf2html`, follow the usage instructions below:
-
-```bash
-./crf2html source_path output_path [-title "Page Title"]
-```
 
 - `source_path`: Path to the directory containing image files or a CRF/ZIP file.
 - `output_path`: Path to the HTML file to be generated.
 - `-title "Page Title"` (optional): Custom title for the HTML page. If not provided, the default title is "Textures."
 
+### Linux
+
+```bash
+./crf2html source_path output_path [-title "Page Title"]
+```
+
+### Windows
+
+```bash
+crf2html.exe source_path output_path [-title "Page Title"]
+```
+
 ### Example
 
 Here's an example of how to use `crf2html` to create an HTML page:
+
+#### Linux
 
 ```bash
 ./crf2html ./fam.crf ./textures.html -title "My Custom Title"
 ```
 
-This command will generate an HTML page named `textures.html` in the current directory, showcasing the image textures from the `./fam.crf` source, with the custom title "My Custom Title."
+#### Windows
+
+```bash
+crf2html.exe C:\path\to\source\fam.crf C:\path\to\output\textures.html -title "My Custom Title"
+```
+
+This command will generate an HTML page named `textures.html` in the current directory, showcasing the image textures from the `fam.crf` source, with the custom title `My Custom Title`.
 
 ## License
 

@@ -8,41 +8,55 @@ on:
 jobs:
   build:
     name: Build and upload the binary
-    runs-on: ubuntu-22.04
-    container:
-      image: alpine:latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows]
+        include:
+          - goos: linux
+            ext: ''
+          - goos: windows
+            ext: '.exe'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        apk add --no-cache go upx
+    - name: Set up Go
+      uses: actions/setup-go@v4
 
-    - name: Build binary
-      run: go build -o crf2html main.go
+    - name: Install UPX
+      run: sudo apt-get install upx
+
+    - name: Build binary for ${{ matrix.goos }}
+      run: |
+        GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o crf2html${{ matrix.ext }} main.go
 
     - name: Compress binary with UPX
-      run: upx --best crf2html
+      run: upx --best crf2html${{ matrix.ext }}
 
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: crf2html
-        path: ./crf2html
+        name: crf2html-${{ matrix.goos }}
+        path: ./crf2html${{ matrix.ext }}
 
   release:
     name: Create a new release
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Download artifact
+    - name: Download artifacts
       uses: actions/download-artifact@v3
       with:
-        name: crf2html
+        name: crf2html-linux
+        path: artifacts/linux
+    - uses: actions/download-artifact@v3
+      with:
+        name: crf2html-windows
+        path: artifacts/windows
 
     - name: Setup GitHub CLI and jq
       run: |
@@ -53,11 +67,15 @@ jobs:
       env:
         KEY_SERVER_APT_KEY: ${{ secrets.KEY_SERVER_APT_KEY }}
 
-    - name: Create release and upload binary
+    - name: Create release and upload binaries
       run: |
         TIMESTAMP=$(date +"%Y-%m-%d")
         SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-8)
-        gh release create ${TIMESTAMP}-${SHORT_SHA} ./crf2html --title "Release ${SHORT_SHA} ($TIMESTAMP)" --repo $GITHUB_REPOSITORY
+        gh release create ${TIMESTAMP}-${SHORT_SHA} \
+          ./artifacts/linux/crf2html \
+          ./artifacts/windows/crf2html.exe \
+          --title "Release ${SHORT_SHA} ($TIMESTAMP)" \
+          --repo $GITHUB_REPOSITORY
       env:
         GITHUB_SHA: ${{ github.sha }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
