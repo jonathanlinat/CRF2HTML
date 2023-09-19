@@ -4,7 +4,13 @@
 
 ## Introduction
 
-The `crf2html` program generates an HTML page that displays image textures from a specified directory or a CRF/ZIP file. The tool resizes the images, encodes them as base64, and organizes them into a neat HTML page.
+`crf2html` is a command-line utility inspired by the Thief series of video games, including **Thief: The Dark Project**, **Thief Gold** and **Thief II: The Metal Age**. In these classic games, textures and images were stored in proprietary formats like CRF and PCX. The tool aims to bring a piece of that nostalgic world to modern web development.
+
+The program is designed to generate an HTML page that beautifully showcases the textures found in Thief series CRF files and other image formats (`.pcx`, `.gif`, `.png`, `.jpg`, and `.tga`). It seamlessly resizes and encodes these textures as base64, making it easy to embed them in an organized HTML page.
+
+Whether you're a fan of the Thief series or simply interested in working with these classic texture formats, `crf2html` provides a convenient way to create galleries and showcases of these vintage textures for various creative and nostalgic purposes.
+
+> The project primarily draws inspiration from [/vfig/thieftextures](https://github.com/vfig/thieftextures), which is a Python program.
 
 ## Features
 
