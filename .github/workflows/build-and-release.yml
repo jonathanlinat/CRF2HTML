@@ -24,15 +24,9 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
 
-    - name: Install UPX
-      run: sudo apt-get install upx
-
     - name: Build binary for ${{ matrix.goos }}
       run: |
         GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o crf2html${{ matrix.ext }} main.go
-
-    - name: Compress binary with UPX
-      run: upx --best crf2html${{ matrix.ext }}
 
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v3

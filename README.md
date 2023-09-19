@@ -59,8 +59,10 @@ If you prefer to compile the program yourself, follow these steps:
 
    **Windows**
 
-   ```bash
-   GOOS=windows GOARCH=amd64 go build -o crf2html.exe main.go
+   ```shell
+   set GOOS=windows
+   set GOARCH=amd64
+   go build -o crf2html.exe main.go
    ```
 
 This will generate a binary, `crf2html` or `crf2html.exe`, in the project directory.
