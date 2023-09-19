@@ -27,7 +27,6 @@ import (
 	"image/color"
 	"image/draw"
 	"image/jpeg"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -152,22 +151,20 @@ func main() {
 	// Create a map to organize textures by family
 	families := make(map[string][]Texture)
 
-	var filePath string
-
 	var imageObj image.Image
 
 	// Iterate through the list of image files
-	for _, filePath = range fileList {
+	for _, filePath := range fileList {
 		parts := strings.Split(strings.ToLower(filePath), string(filepath.Separator))
-		if len(parts) != 2 {
+
+		if len(parts) < 2 {
 			fmt.Fprintf(os.Stderr, "skipping %s\n", filePath)
 			continue
 		}
-		family, filename := parts[0], parts[1]
-		if strings.Contains(family, "/") || strings.Contains(family, "\\") {
-			fmt.Fprintf(os.Stderr, "skipping %s\n", filePath)
-			continue
-		}
+
+		// Get the family and filename from the last two parts of the path
+		family, filename := parts[len(parts)-2], parts[len(parts)-1]
+
 		extension := filepath.Ext(filename)
 		allowedExtensions := map[string]bool{".pcx": true, ".gif": true, ".png": true, ".jpg": true, ".tga": true}
 		if !allowedExtensions[extension] || filename == "full.pcx" {
@@ -314,7 +311,7 @@ func main() {
 	)
 
 	// Write the HTML page to the output file
-	err = ioutil.WriteFile(settings.OutputPath, []byte(page), 0644)
+	err = os.WriteFile(settings.OutputPath, []byte(page), 0644)
 	if err != nil {
 		fmt.Println(err)
 	}

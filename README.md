@@ -4,22 +4,15 @@
 
 ## Introduction
 
-`crf2html` is a command-line utility inspired by the Thief series of video games, including Thief: The Dark Project (Thief Gold) and Thief II: The Metal Age. In these classic games, textures and images were stored in proprietary formats like CRF and PCX. The tool aims to bring a piece of that nostalgic world to modern web development.
-
-The program is designed to generate an HTML page that beautifully showcases the textures found in Thief series CRF files and other image formats (PCX, GIF, PNG, and JPG). It seamlessly resizes and encodes these textures as base64, making it easy to embed them in an organized HTML page.
-
-Whether you're a fan of the Thief series or simply interested in working with these classic texture formats, `crf2html` provides a convenient way to create galleries and showcases of these vintage textures for various creative and nostalgic purposes.
-
-> The project primarily draws inspiration from [/vfig/thieftextures](https://github.com/vfig/thieftextures), which is a Python program.
+The `crf2html` program generates an HTML page that displays image textures from a specified directory or a CRF/ZIP file. The tool resizes the images, encodes them as base64, and organizes them into a neat HTML page.
 
 ## Features
 
-- Converts Thief series textures and other image formats to base64 for easy embedding in an HTML page.
-- Organizes textures by family and sorts them alphabetically by caption.
-- Allows customization of the page title, so you can give your texture showcase a unique name.
-- Supports various image formats, including PCX, GIF, PNG, and JPG.
-- Provides an option to specify a custom background color for the images.
-- Generates a clean and organized HTML page with embedded textures, reminiscent of the Thief games' texture menus.
+- Read image files from both directories and CRF/ZIP files.
+- Supports multiple image formats including `.pcx`, `.gif`, `.png`, `.jpg`, and `.tga`.
+- Ability to resize images and encode them as base64 for inline embedding in HTML.
+- Organizes images by families, based on their directory or path structure.
+- Easily customizable output through command-line arguments.
 
 ## Installation
 
@@ -31,7 +24,7 @@ You can download a precompiled binary for your platform from the [releases](http
 
 > **Important**
 >
-> It is recommended to install and use at least **Go v1.18**. Here are the [corresponding instructions](https://go.dev/doc/install).
+> It is recommended to install and use at least **Go v1.21**. Here are the [corresponding instructions](https://go.dev/doc/install).
 
 ---
 
@@ -51,18 +44,8 @@ If you prefer to compile the program yourself, follow these steps:
 
 3. Build the program:
 
-   **Linux**
-
    ```bash
-   GOOS=linux GOARCH=amd64 go build -o crf2html main.go
-   ```
-
-   **Windows**
-
-   ```shell
-   set GOOS=windows
-   set GOARCH=amd64
-   go build -o crf2html.exe main.go
+   go build -o crf2html main.go
    ```
 
 This will generate a binary, `crf2html` or `crf2html.exe`, in the project directory.
@@ -72,7 +55,7 @@ This will generate a binary, `crf2html` or `crf2html.exe`, in the project direct
 - `source_path`: Path to the directory containing image files or a CRF/ZIP file.
 - `output_path`: Path to the HTML file to be generated.
 - `-title "Page Title"` (optional): Custom title for the HTML page. If not provided, the default title is `Textures`.
-- `-size 256` (optional): Custom thumbnail size for the HTML page. If not provided, the default size is `128`.
+- `-size 64` (optional): Custom thumbnail size for the HTML page. If not provided, the default size is `128`.
 
 ### Linux
 
@@ -93,13 +76,13 @@ Here's an example of how to use `crf2html` to create an HTML page:
 #### Linux
 
 ```bash
-./crf2html ./fam.crf ./textures.html -title "My Custom Title"
+./crf2html ./fam.crf ./textures.html -title "My Custom Title" -size 64
 ```
 
 #### Windows
 
 ```bash
-crf2html.exe C:\path\to\source\fam.crf C:\path\to\output\textures.html -title "My Custom Title"
+crf2html.exe C:\path\to\source\fam.crf C:\path\to\output\textures.html -title "My Custom Title" -size 64
 ```
 
 This command will generate an HTML page named `textures.html` in the current directory, showcasing the image textures from the `fam.crf` source, with the custom title `My Custom Title`.
