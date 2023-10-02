@@ -2,3 +2,5 @@
 *.html
 *.zip
 crf2html*
+!crf2html.go
+fam*

@@ -51,7 +51,7 @@ If you prefer to compile the program yourself, follow these steps:
 3. Build the program:
 
    ```bash
-   go build -o crf2html main.go
+   go build crf2html.go
    ```
 
 This will generate a binary, `crf2html` or `crf2html.exe`, in the project directory.

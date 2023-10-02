@@ -26,7 +26,7 @@ jobs:
 
     - name: Build binary for ${{ matrix.goos }}
       run: |
-        GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o crf2html${{ matrix.ext }} main.go
+        GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o crf2html${{ matrix.ext }} crf2html.go
 
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v3
